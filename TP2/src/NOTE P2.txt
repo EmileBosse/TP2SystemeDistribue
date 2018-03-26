@@ -1,0 +1,5 @@
+Pour faire fonctionner la librairie Google Authentication
+
+Ouvrir un powershell -> Taper la commande suivante :
+
+$env:GOOGLE_APPLICATION_CREDENTIALS="C:\[le path jusqu'au projet git]\p2\p2\My Project-482c2173d549.json"

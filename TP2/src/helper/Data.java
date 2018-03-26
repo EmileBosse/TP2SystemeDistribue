@@ -1,16 +1,18 @@
 package helper;
 
+import java.awt.Image;
+import java.io.File;
 import java.sql.Blob;
 
 public class Data {
 	private String textEN;
 	private String textFR;
 	//premier est image initial
-	private Blob[] images;
+	private File[] images;
 	
 	//Constructeurs
 	public Data() {}
-	public Data(String textEN, Blob imageInit) {
+	public Data(String textEN, File imageInit) {
 		this.textEN = textEN;
 		images[0] = imageInit;
 	}
@@ -20,7 +22,7 @@ public class Data {
 		textFR += txt;
 	}
 	
-	public void addImage(Blob image) {
+	public void addImage(File image) {
 		images[images.length] = image;
 	}
 	
@@ -29,7 +31,7 @@ public class Data {
 		this.textEN = textEN;
 	}
 
-	public void setInitialImage(Blob image) {
+	public void setInitialImage(File image) {
 		images[0] = image;
 	}
 	
@@ -37,12 +39,12 @@ public class Data {
 		this.textFR = textFR;
 	}
 	
-	public void setImages(Blob[] images) {
+	public void setImages(File[] images) {
 		this.images = images;
 	}
 	
 	//get images
-	public Blob[] getImages() {
+	public File[] getImages() {
 		return images;
 	}
 	

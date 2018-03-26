@@ -4,6 +4,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
+import com.rabbitmq.client.MessageProperties;
 import com.rabbitmq.client.Connection;
 
 import java.awt.BorderLayout;
@@ -14,6 +15,9 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.awt.image.WritableRaster;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,9 +25,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.file.Files;
 import java.sql.Blob;
 import java.util.Iterator;
 import java.util.Scanner;
+import java.util.concurrent.TimeoutException;
 
 import javax.imageio.ImageIO;
 import javax.swing.GroupLayout;
@@ -63,6 +69,11 @@ import helper.Data;
 public class Mission1 {
 	
 	private static Data d = new Data();
+	static String NOM_FILE_ATTENTE = "file_d-attente_bd";
+	static String hostName = "localhost";
+	//String hostName = "192.168.56.1";
+	static boolean durable = true;
+	
 	
 	public static void main(String[] argv) throws Exception {
 		
@@ -134,7 +145,15 @@ public class Mission1 {
 		sendButton.setEnabled(false);
 		sendButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				actionSendData();
+				//envoyer l'image
+				try {
+					actionSendData(Files.readAllBytes(d.getImages()[0].toPath()), "image");
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				
+				//envoyer le texte
+				actionSendData(d.getTextEN().getBytes(), "text");
 			}
 		});
 
@@ -277,7 +296,15 @@ public class Mission1 {
 		sendButton.setEnabled(false);
 		sendButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				actionSendData();
+				//envoyer l'image
+				try {
+					actionSendData(Files.readAllBytes(d.getImages()[0].toPath()), "image");
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				
+				//envoyer le texte
+				actionSendData(d.getTextEN().getBytes(), "text");
 			}
 		});
 		
@@ -371,8 +398,29 @@ public class Mission1 {
 	}
 	
 	//cette fonction utilise rabbitmq pour communiquer avec p2 et p3 qui a leurs tours vont envoyer le tout au serveur
-	private static void actionSendData() {
+	private static void actionSendData(byte[] message, String topics) {
+		ConnectionFactory factory = new ConnectionFactory();
 		
+		factory.setHost(hostName);
+		
+		Connection connexion;
+		try {
+			connexion = factory.newConnection();
+			
+			Channel canalCommunication = connexion.createChannel();
+			
+			canalCommunication.exchangeDeclare("fromP1", "topic");
+			
+			canalCommunication.basicPublish("fromP1", topics, null, message);
+			
+			connexion.close();
+			
+		
+		} catch (TimeoutException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	//fonction lorsque l'import est fait avec l'explorateur de fichier pour le text
@@ -425,6 +473,20 @@ public class Mission1 {
 		}
 		if(image != null) {
 			//encore mistérieux
+			d.setInitialImage(image);
 		}
 	}
+
+	public byte[] extractBytes (String ImageName) throws IOException {
+		 // open image
+		 File imgPath = new File(ImageName);
+		 BufferedImage bufferedImage = ImageIO.read(imgPath);
+
+		 // get DataBufferBytes from Raster
+		 WritableRaster raster = bufferedImage .getRaster();
+		 DataBufferByte data   = (DataBufferByte) raster.getDataBuffer();
+
+		 return ( data.getData() );
+	}
+
 }

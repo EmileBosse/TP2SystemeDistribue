@@ -18,6 +18,8 @@ namespace p2
         private const string GOOGLE_CREDENTIAL = "GOOGLE_APPLICATION_CREDENTIALS";
         static void Main(string[] args)
         {
+            bool isReceptionOver = false;
+            string texteATraduire = "";
             var factory = new ConnectionFactory() { HostName = "localhost" };
             using (var connection = factory.CreateConnection())
             using (var channel = connection.CreateModel())
@@ -37,43 +39,61 @@ namespace p2
                 var consumer = new EventingBasicConsumer(channel);
                 consumer.Received += (model, ea) =>
                 {
-                    var texteATraduire = Encoding.UTF8.GetString(ea.Body);
+                    var paragraphe = Encoding.UTF8.GetString(ea.Body);
 
-                    // Cas idéal : on arrive à faire fonctionner la traduction :)
-                    //string translated = Program.Traduction(texteATraduire)
-
-                    // Cas actuel : on arrive pas à faire fonctionner la traduction
-                    string translated = texteATraduire;
-
-                    using (var channel2 = connection.CreateModel())
+                    if(paragraphe == "")
                     {
-                        channel2.ExchangeDeclare(exchange: "toP4",
-                                    type: "topic");
-
-                        var routingKey = "text";
-
-                        List<string> textsToP4 = new List<string>();
-
-                        textsToP4.Add(texteATraduire);
-                        textsToP4.Add(translated);
-
-
-                        using (var ms = new MemoryStream())
-                        {
-                            var binary = new BinaryFormatter();
-                            binary.Serialize(ms, textsToP4);
-                            channel.BasicPublish(exchange: "toP4",
-                                            routingKey: routingKey,
-                                            basicProperties: null,
-                                            body: ms.ToArray());
-                        }
-
-                        Console.WriteLine(" [x] Sent ");
+                        isReceptionOver = true;
                     }
+                    else
+                    {
+                        texteATraduire += paragraphe;
+                    }
+
+
+                    if (isReceptionOver)
+                    {
+
+                        // Cas idéal : on arrive à faire fonctionner la traduction :)
+                        //string translated = Program.Traduction(texteATraduire)
+
+                        // Cas actuel : on arrive pas à faire fonctionner la traduction
+
+                        string translated = texteATraduire;
+
+                        using (var channel2 = connection.CreateModel())
+                        {
+                            channel2.ExchangeDeclare(exchange: "toP4",
+                                        type: "topic");
+
+                            var routingKey = "text";
+
+                            List<string> textsToP4 = new List<string>();
+
+                            textsToP4.Add(texteATraduire);
+                            textsToP4.Add(translated);
+
+
+                            using (var ms = new MemoryStream())
+                            {
+                                var binary = new BinaryFormatter();
+                                binary.Serialize(ms, textsToP4);
+                                channel.BasicPublish(exchange: "toP4",
+                                                routingKey: routingKey,
+                                                basicProperties: null,
+                                                body: ms.ToArray());
+                            }
+
+                            Console.WriteLine(" [x] Sent ");
+                        }
+                    }
+
+
                 };
                 channel.BasicConsume(queue: queueName,
                                      autoAck: true,
                                      consumer: consumer);
+
 
 
 

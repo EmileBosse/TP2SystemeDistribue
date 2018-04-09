@@ -22,7 +22,7 @@ namespace p3
             using (var connection = factory.CreateConnection())
             using (var channel = connection.CreateModel())
             {
-                channel.ExchangeDeclare(exchange: "imageP1", type: "topic");
+                channel.ExchangeDeclare(exchange: "fromP1", type: "topic");
                 var queueName = channel.QueueDeclare().QueueName;
 
 
@@ -47,7 +47,7 @@ namespace p3
 
                     using (var channel2 = connection.CreateModel())
                     {
-                        channel2.ExchangeDeclare(exchange: "imageP3",
+                        channel2.ExchangeDeclare(exchange: "toP4",
                                     type: "topic");
 
                         var routingKey = "image";
@@ -59,7 +59,7 @@ namespace p3
                         {
                             originale.Save(ms, ImageFormat.Jpeg);
                             img = ms.ToArray();
-                            channel.BasicPublish(exchange: "imageP3",
+                            channel.BasicPublish(exchange: "toP4",
                                              routingKey: routingKey,
                                              basicProperties: null,
                                              body: img);
@@ -69,7 +69,7 @@ namespace p3
                         {
                             resize1.Save(ms, ImageFormat.Jpeg);
                             img = ms.ToArray();
-                            channel.BasicPublish(exchange: "imageP3",
+                            channel.BasicPublish(exchange: "toP4",
                                             routingKey: routingKey,
                                             basicProperties: null,
                                             body: img);
@@ -79,7 +79,7 @@ namespace p3
                         {
                             resize2.Save(ms, ImageFormat.Jpeg);
                             img = ms.ToArray();
-                            channel.BasicPublish(exchange: "imageP3",
+                            channel.BasicPublish(exchange: "toP4",
                                             routingKey: routingKey,
                                             basicProperties: null,
                                             body: img);

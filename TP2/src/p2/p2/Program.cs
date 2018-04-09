@@ -1,7 +1,13 @@
-﻿using Google.Cloud.Translation.V2;
+﻿using Google.Apis.Services;
+using Google.Apis.Translate.v2.Data;
+using Google.Cloud.Translation.V2;
+using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,14 +15,92 @@ namespace p2
 {
     class Program
     {
+        private const string GOOGLE_CREDENTIAL = "GOOGLE_APPLICATION_CREDENTIALS";
         static void Main(string[] args)
         {
+            var factory = new ConnectionFactory() { HostName = "localhost" };
+            using (var connection = factory.CreateConnection())
+            using (var channel = connection.CreateModel())
+            {
+
+                channel.ExchangeDeclare(exchange: "fromP1", type: "topic");
+                var queueName = channel.QueueDeclare().QueueName;
+
+
+                channel.QueueBind(queue: queueName,
+                                  exchange: "fromP1",
+                                  routingKey: "texte");
+
+
+                Console.WriteLine(" [*] Waiting for messages. To exit press CTRL+C");
+
+                var consumer = new EventingBasicConsumer(channel);
+                consumer.Received += (model, ea) =>
+                {
+                    var texteATraduire = Encoding.UTF8.GetString(ea.Body);
+
+                    // Cas idéal : on arrive à faire fonctionner la traduction :)
+                    //string translated = Program.Traduction(texteATraduire)
+
+                    // Cas actuel : on arrive pas à faire fonctionner la traduction
+                    string translated = texteATraduire;
+
+                    using (var channel2 = connection.CreateModel())
+                    {
+                        channel2.ExchangeDeclare(exchange: "toP4",
+                                    type: "topic");
+
+                        var routingKey = "texte";
+
+                        List<string> textsToP4 = new List<string>();
+
+                        textsToP4.Add(texteATraduire);
+                        textsToP4.Add(translated);
+
+
+                        using (var ms = new MemoryStream())
+                        {
+                            var binary = new BinaryFormatter();
+                            binary.Serialize(ms, textsToP4);
+                            channel.BasicPublish(exchange: "toP4",
+                                            routingKey: routingKey,
+                                            basicProperties: null,
+                                            body: ms.ToArray());
+                        }
+
+                        Console.WriteLine(" [x] Sent ");
+                    }
+                };
+                channel.BasicConsume(queue: queueName,
+                                     autoAck: true,
+                                     consumer: consumer);
+
+
+
+            }
+        }
+
+        private static string Traduction(string texteToTranslate)
+        {
+            string translated = "";
+
+            string envVar = Environment.GetEnvironmentVariable(GOOGLE_CREDENTIAL);
+
+            var path = new DirectoryInfo("../../../../../../").FullName;
+            path += "credentialsV2.json";
+
+            if (envVar == null)
+            {
+                Environment.SetEnvironmentVariable(GOOGLE_CREDENTIAL, path);
+            }
+
+
             Console.OutputEncoding = System.Text.Encoding.Unicode;
             TranslationClient client = TranslationClient.Create();
-            var response = client.TranslateText("Hello World.", "ru");
-            Console.WriteLine(response.TranslatedText);
-            Console.ReadLine();
+            translated = client.TranslateText("Hello World.", "fr", "en").TranslatedText;
 
+            return translated;
         }
+
     }
 }

@@ -29,7 +29,7 @@ namespace p2
 
                 channel.QueueBind(queue: queueName,
                                   exchange: "fromP1",
-                                  routingKey: "texte");
+                                  routingKey: "text");
 
 
                 Console.WriteLine(" [*] Waiting for messages. To exit press CTRL+C");
@@ -50,7 +50,7 @@ namespace p2
                         channel2.ExchangeDeclare(exchange: "toP4",
                                     type: "topic");
 
-                        var routingKey = "texte";
+                        var routingKey = "text";
 
                         List<string> textsToP4 = new List<string>();
 

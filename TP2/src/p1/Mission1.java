@@ -477,6 +477,7 @@ public class Mission1 {
 		}
 	}
 
+	//cette fonction transfert un File en byte[]
 	public byte[] extractBytes (String ImageName) throws IOException {
 		 // open image
 		 File imgPath = new File(ImageName);

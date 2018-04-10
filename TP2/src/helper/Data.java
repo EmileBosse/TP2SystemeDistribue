@@ -2,19 +2,22 @@ package helper;
 
 import java.awt.Image;
 import java.io.File;
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.List;
 import java.sql.Blob;
 
 public class Data {
 	private String textEN;
 	private String textFR;
 	//premier est image initial
-	private File[] images;
+	private List<File> images;
 	
 	//Constructeurs
 	public Data() {}
 	public Data(String textEN, File imageInit) {
 		this.textEN = textEN;
-		images[0] = imageInit;
+		images.set(0, imageInit);
 	}
 	
 	//add value to data
@@ -23,7 +26,7 @@ public class Data {
 	}
 	
 	public void addImage(File image) {
-		images[images.length] = image;
+		images.add(image);
 	}
 	
 	//set value to data
@@ -32,7 +35,7 @@ public class Data {
 	}
 
 	public void setInitialImage(File image) {
-		images[0] = image;
+		images.set(0, image);
 	}
 	
 	public void setTraduction(String textFR) {
@@ -40,12 +43,12 @@ public class Data {
 	}
 	
 	public void setImages(File[] images) {
-		this.images = images;
+		this.images = Arrays.asList(images);
 	}
 	
 	//get images
 	public File[] getImages() {
-		return images;
+		return (File[]) images.toArray();
 	}
 	
 	//get french text

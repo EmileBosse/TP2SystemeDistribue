@@ -7,5 +7,6 @@
 	<classpathentry kind="lib" path="C:/Users/EmileBosse/Desktop/Lundi PM/rabbitmqTest/slf4j-simple-1.7.25.jar"/>
 	<classpathentry kind="lib" path="C:/Users/EmileBosse/Desktop/Lundi PM/htmlcleaner-2.21.jar"/>
 	<classpathentry kind="lib" path="C:/Users/EmileBosse/Desktop/Lundi PM/jsoup-1.11.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/EmileBosse/Desktop/Lundi PM/mysql-connector-java-5.1.46.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -60,7 +60,8 @@ namespace p3
 
                         using (var ms = new MemoryStream())
                         {
-                            originale.Save(ms, ImageFormat.Jpeg);
+                            var tmp = new Bitmap(originale);
+                            tmp.Save(ms, ImageFormat.Jpeg);
                             img = ms.ToArray();
                             channel.BasicPublish(exchange: "toP4",
                                              routingKey: routingKey,
@@ -70,7 +71,8 @@ namespace p3
 
                         using (var ms = new MemoryStream())
                         {
-                            resize1.Save(ms, ImageFormat.Jpeg);
+                            var tmp = new Bitmap(resize1);
+                            tmp.Save(ms, ImageFormat.Jpeg);
                             img = ms.ToArray();
                             channel.BasicPublish(exchange: "toP4",
                                             routingKey: routingKey,
@@ -80,7 +82,8 @@ namespace p3
 
                         using (var ms = new MemoryStream())
                         {
-                            resize2.Save(ms, ImageFormat.Jpeg);
+                            var tmp = new Bitmap(resize2);
+                            tmp.Save(ms, ImageFormat.Jpeg);
                             img = ms.ToArray();
                             channel.BasicPublish(exchange: "toP4",
                                             routingKey: routingKey,

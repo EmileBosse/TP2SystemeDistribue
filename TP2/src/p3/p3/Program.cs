@@ -94,7 +94,7 @@ namespace p3
 
             }
 
-
+            Console.ReadLine();
         }
     }
 }

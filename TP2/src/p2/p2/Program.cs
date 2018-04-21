@@ -20,6 +20,9 @@ namespace p2
         {
             bool isReceptionOver = false;
             string texteATraduire = "";
+            texteATraduire = "Hello";
+            // Cas idéal : on arrive à faire fonctionner la traduction :)
+            string translated = Program.Traduction(texteATraduire);
             var factory = new ConnectionFactory() { HostName = "localhost" };
             using (var connection = factory.CreateConnection())
             using (var channel = connection.CreateModel())
@@ -53,13 +56,13 @@ namespace p2
 
                     if (isReceptionOver)
                     {
-
+                        
                         // Cas idéal : on arrive à faire fonctionner la traduction :)
-                        //string translated = Program.Traduction(texteATraduire)
+                        //string translated = Program.Traduction(texteATraduire);
 
                         // Cas actuel : on arrive pas à faire fonctionner la traduction
 
-                        string translated = texteATraduire;
+                        //string translated = texteATraduire;
 
                         using (var channel2 = connection.CreateModel())
                         {
@@ -98,6 +101,7 @@ namespace p2
 
 
             }
+            Console.ReadLine();
         }
 
         private static string Traduction(string texteToTranslate)
@@ -107,7 +111,7 @@ namespace p2
             string envVar = Environment.GetEnvironmentVariable(GOOGLE_CREDENTIAL);
 
             var path = new DirectoryInfo("../../../../../../").FullName;
-            path += "credentialsV2.json";
+            path += "Tp2SystDistrBosseBiras-adbae7cf74c7.json";
 
             if (envVar == null)
             {

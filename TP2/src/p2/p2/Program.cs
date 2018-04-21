@@ -20,9 +20,6 @@ namespace p2
         {
             bool isReceptionOver = false;
             string texteATraduire = "";
-            texteATraduire = "Hello";
-            // Cas idéal : on arrive à faire fonctionner la traduction :)
-            string translated = Program.Traduction(texteATraduire);
             var factory = new ConnectionFactory() { HostName = "localhost" };
             using (var connection = factory.CreateConnection())
             using (var channel = connection.CreateModel())
@@ -62,7 +59,7 @@ namespace p2
 
                         // Cas actuel : on arrive pas à faire fonctionner la traduction
 
-                        //string translated = texteATraduire;
+                        string translated = texteATraduire;
 
                         using (var channel2 = connection.CreateModel())
                         {

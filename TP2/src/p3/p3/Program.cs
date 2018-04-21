@@ -36,6 +36,9 @@ namespace p3
                 var consumer = new EventingBasicConsumer(channel);
                 consumer.Received += (model, ea) =>
                 {
+
+                    Console.WriteLine($"Reception en cours sur le topic {ea.Exchange} : {ea.RoutingKey}");
+
                     var body = ea.Body;
 
                     using (var ms = new MemoryStream(body))
@@ -86,15 +89,17 @@ namespace p3
                         }
 
                         Console.WriteLine(" [x] Sent ");
+                        
                     }
                 };
                 channel.BasicConsume(queue: queueName,
                                      autoAck: true,
                                      consumer: consumer);
+                Console.ReadLine();
 
             }
 
-            Console.ReadLine();
+
         }
     }
 }

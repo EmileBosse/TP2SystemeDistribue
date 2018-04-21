@@ -39,6 +39,8 @@ namespace p2
                 var consumer = new EventingBasicConsumer(channel);
                 consumer.Received += (model, ea) =>
                 {
+                    Console.WriteLine($"Reception en cours sur le topic {ea.Exchange} : {ea.RoutingKey}");
+
                     var paragraphe = Encoding.UTF8.GetString(ea.Body);
 
                     if(paragraphe == "")
@@ -95,10 +97,10 @@ namespace p2
                                      consumer: consumer);
 
 
-
+                Console.ReadLine();
 
             }
-            Console.ReadLine();
+            
         }
 
         private static string Traduction(string texteToTranslate)

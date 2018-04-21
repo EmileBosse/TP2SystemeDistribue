@@ -39,6 +39,8 @@ namespace p2
                 var consumer = new EventingBasicConsumer(channel);
                 consumer.Received += (model, ea) =>
                 {
+                    Console.WriteLine("on recoie un truc dans p2.");
+
                     var paragraphe = Encoding.UTF8.GetString(ea.Body);
 
                     if(paragraphe == "")

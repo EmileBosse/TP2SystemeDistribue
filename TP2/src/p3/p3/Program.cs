@@ -36,6 +36,8 @@ namespace p3
                 var consumer = new EventingBasicConsumer(channel);
                 consumer.Received += (model, ea) =>
                 {
+                    Console.WriteLine("on recoie un truc dans p3.");
+
                     var body = ea.Body;
 
                     using (var ms = new MemoryStream(body))

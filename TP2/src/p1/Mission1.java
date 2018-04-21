@@ -27,9 +27,11 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.file.Files;
 import java.sql.Blob;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Scanner;
 import java.util.concurrent.TimeoutException;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.GroupLayout;
@@ -147,13 +149,14 @@ public class Mission1 {
 			public void actionPerformed(ActionEvent e) {
 				//envoyer l'image
 				try {
-					actionSendData(Files.readAllBytes(d.getImages()[0].toPath()), "image");
+					actionSendData(Files.readAllBytes(d.getImages().get(0).toPath()), "image");
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
 				
 				//envoyer le texte
-				actionSendData(d.getTextEN().getBytes(), "text");
+				envoyerText();
+				//actionSendData(d.getTextEN().getBytes(), "text");
 			}
 		});
 
@@ -298,13 +301,14 @@ public class Mission1 {
 			public void actionPerformed(ActionEvent e) {
 				//envoyer l'image
 				try {
-					actionSendData(Files.readAllBytes(d.getImages()[0].toPath()), "image");
+					actionSendData(Files.readAllBytes(d.getImages().get(0).toPath()), "image");
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
 				
 				//envoyer le texte
-				actionSendData(d.getTextEN().getBytes(), "text");
+				envoyerText();
+				//actionSendData(d.getTextEN().getBytes(), "text");
 			}
 		});
 		
@@ -392,13 +396,16 @@ public class Mission1 {
 			//System.out.println(el.html());
 			
 		}
-		if(!d.getTextEN().equals("") && !d.getImages()[0].equals(null)) {
+		if(!d.getTextEN().equals("") && !d.getImages().get(0).equals(null)) {
 			sendButton.setEnabled(true);
 		}
 	}
 	
 	//cette fonction utilise rabbitmq pour communiquer avec p2 et p3 qui a leurs tours vont envoyer le tout au serveur
 	private static void actionSendData(byte[] message, String topics) {
+		System.out.println("**************");
+		System.out.println("Nous envoyons le message de topics : "+topics+"...");		
+		System.out.println("**************");
 		ConnectionFactory factory = new ConnectionFactory();
 		
 		factory.setHost(hostName);
@@ -421,6 +428,9 @@ public class Mission1 {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		System.out.println("fin envoie "+topics+"...");		
+		System.out.println("**************");
 	}
 	
 	//fonction lorsque l'import est fait avec l'explorateur de fichier pour le text
@@ -477,6 +487,19 @@ public class Mission1 {
 		}
 	}
 
+	//cette fonction permet l'envoie paragraphe par paragragne
+	private static void envoyerText(){
+		String[] l = d.getTextEN().split("\n");
+		byte[] message; 
+		for(int i = 0; i < l.length; i++) {
+			message = l[i].getBytes();
+			actionSendData(message, "text");
+		}
+		String fin = "";
+		message = fin.getBytes();
+		actionSendData(message,"text");
+	}
+	
 	//cette fonction transfert un File en byte[]
 	public byte[] extractBytes (String ImageName) throws IOException {
 		 // open image

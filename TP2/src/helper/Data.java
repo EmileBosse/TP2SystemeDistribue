@@ -3,6 +3,7 @@ package helper;
 import java.awt.Image;
 import java.io.File;
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.sql.Blob;
@@ -14,10 +15,13 @@ public class Data {
 	private List<File> images;
 	
 	//Constructeurs
-	public Data() {}
+	public Data() {
+		images = new ArrayList<File>();
+	}
 	public Data(String textEN, File imageInit) {
+		images = new ArrayList<File>();
 		this.textEN = textEN;
-		images.set(0, imageInit);
+		images.add(0, imageInit);
 	}
 	
 	//add value to data
@@ -35,7 +39,11 @@ public class Data {
 	}
 
 	public void setInitialImage(File image) {
-		images.set(0, image);
+		if(images.size() > 0) {
+			images.set(0, image);
+		}else {
+			images.add(image);
+		}
 	}
 	
 	public void setTraduction(String textFR) {
@@ -47,8 +55,8 @@ public class Data {
 	}
 	
 	//get images
-	public File[] getImages() {
-		return (File[]) images.toArray();
+	public List<File> getImages() {
+		return images;
 	}
 	
 	//get french text
